@@ -72,7 +72,7 @@ class Opencv < Formula
       -DWITH_TBB=OFF
       -DWITH_VTK=OFF
       -DBUILD_opencv_python2=ON
-      -DBUILD_opencv_python3=ON
+      -DBUILD_opencv_python3=OFF
       -DPYTHON2_EXECUTABLE=#{which "python"}
       -DPYTHON2_LIBRARY=#{py_lib}/libpython2.7.dylib
       -DPYTHON2_INCLUDE_DIR=#{py_prefix}/include/python2.7
