@@ -78,7 +78,7 @@ class Opencv < Formula
 
     mkdir "build" do
       system "cmake", "..", *args
-      system "make"
+      system "make -j4"
       system "make", "install"
     end
   end
