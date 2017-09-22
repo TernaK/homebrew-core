@@ -34,17 +34,11 @@ class Opencv < Formula
   def install
     ENV.cxx11
 
-    resource("contrib").stage buildpath/"opencv_contrib"
-
     # Reset PYTHONPATH, workaround for https://github.com/Homebrew/homebrew-science/pull/4885
     ENV.delete("PYTHONPATH")
 
     py_prefix = `python-config --prefix`.chomp
     py_lib = "#{py_prefix}/lib"
-
-    py3_config = `python3-config --configdir`.chomp
-    py3_include = `python3 -c "import distutils.sysconfig as s; print(s.get_python_inc())"`.chomp
-    py3_version = Language::Python.major_minor_version "python3"
 
     args = std_cmake_args + %W[
       -DCMAKE_OSX_DEPLOYMENT_TARGET=
@@ -57,8 +51,7 @@ class Opencv < Formula
       -DBUILD_TIFF=OFF
       -DBUILD_ZLIB=OFF
       -DBUILD_opencv_java=OFF
-      -DOPENCV_ENABLE_NONFREE=ON
-      -DOPENCV_EXTRA_MODULES_PATH=#{buildpath}/opencv_contrib/modules
+      -DOPENCV_ENABLE_NONFREE=OFF
       -DWITH_1394=OFF
       -DWITH_CUDA=OFF
       -DWITH_EIGEN=ON
@@ -76,9 +69,6 @@ class Opencv < Formula
       -DPYTHON2_EXECUTABLE=#{which "python"}
       -DPYTHON2_LIBRARY=#{py_lib}/libpython2.7.dylib
       -DPYTHON2_INCLUDE_DIR=#{py_prefix}/include/python2.7
-      -DPYTHON3_EXECUTABLE=#{which "python3"}
-      -DPYTHON3_LIBRARY=#{py3_config}/libpython#{py3_version}.dylib
-      -DPYTHON3_INCLUDE_DIR=#{py3_include}
     ]
 
     if build.bottle?
@@ -105,7 +95,7 @@ class Opencv < Formula
     system ENV.cxx, "test.cpp", "-I#{include}", "-L#{lib}", "-o", "test"
     assert_equal `./test`.strip, version.to_s
 
-    ["python", "python3"].each do |python|
+    ["python"].each do |python|
       output = shell_output("#{python} -c 'import cv2; print(cv2.__version__)'")
       assert_equal version.to_s, output.chomp
     end
